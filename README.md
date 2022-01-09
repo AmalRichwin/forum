@@ -1,3 +1,3 @@
 ### FORUM APP
 
-[Link to App](https://discussionappp.herokuapp.com/)
+[Link to App](https://forumdiscussionapp.herokuapp.com/)
