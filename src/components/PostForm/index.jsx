@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import * as React from 'react'
 
+import toast, { Toaster } from 'react-hot-toast'
 import { useMutation, useQueryClient } from 'react-query'
 
 import { AuthContext } from '../../context/auth'
@@ -125,6 +126,7 @@ export default function PostForm({ closeModal }) {
             try {
                 mutation.mutate({ title, description, authorId })
             } catch (error) {
+                toast.error('Unable to add issue')
                 console.log(error)
                 throw new Error(`Add issue failed: ${error}`)
             }
@@ -132,6 +134,7 @@ export default function PostForm({ closeModal }) {
     }
     return (
         <>
+            <Toaster />
             <div>
                 <div className="md:grid md:grid-cols-3 md:gap-6">
                     <div className="mt-5 md:mt-0 md:col-span-3">

@@ -1,5 +1,6 @@
 import React from 'react'
 
+import toast, { Toaster } from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
 
 import Navbar2 from '../../components/Navbar/Navbar2'
@@ -114,6 +115,10 @@ function Signup() {
                     return navigate('/signin')
                 }
             } catch (error) {
+                if (error.response.data.message === 'User already exists') {
+                    toast.error(error.response.data.message)
+                }
+                toast.error('Unable to signup')
                 console.log(error)
                 throw new Error(`Add issue failed: ${error}`)
             }
@@ -122,6 +127,7 @@ function Signup() {
     return (
         <>
             <Navbar2 />
+            <Toaster />
             <section className="text-blueGray-700">
                 <div className="container items-center ">
                     <div className="flex flex-col w-full max-w-md p-10 mx-auto my-4 transition duration-500 ease-in-out transform bg-white rounded-lg md:mt-0">

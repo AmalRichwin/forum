@@ -1,5 +1,6 @@
 import React from 'react'
 
+import toast, { Toaster } from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
 
 import Navbar2 from '../../components/Navbar/Navbar2'
@@ -117,7 +118,12 @@ function Signin() {
                     })
                 }
             } catch (error) {
-                console.log(error)
+                if (error.response.status === 401) {
+                    toast.error('Invalid Password')
+                    return
+                }
+                toast.error(error.response.data.message)
+                console.log('@@#', error.response)
                 throw new Error(`Add issue failed: ${error}`)
             }
         }
@@ -126,6 +132,7 @@ function Signin() {
     return (
         <>
             <Navbar2 />
+            <Toaster />
             <section className="text-blueGray-700">
                 <div className="container items-center ">
                     <div className="flex flex-col w-full max-w-md p-10 mx-auto my-4 transition duration-500 ease-in-out transform bg-white rounded-lg md:mt-0">
