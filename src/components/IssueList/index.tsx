@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+import { IssueType } from 'lib/types'
 import { useInfiniteQuery } from 'react-query'
 import { Link } from 'react-router-dom'
 
@@ -15,7 +16,7 @@ const fetchIssues = async ({ pageParam = 1 }) => {
             `/api/issue/?page=${pageParam}&limit=5`
         )
         return data
-    } catch (error) {
+    } catch (error: InstanceType<Error>) {
         throw new Error(error)
     }
 }
@@ -79,7 +80,7 @@ function IssueList() {
                     {data &&
                         data.pages.map((page) => (
                             <React.Fragment key={page.currentPage}>
-                                {page.issues.map((issue) => (
+                                {page.issues.map((issue: IssueType) => (
                                     <Link
                                         key={issue._id}
                                         to={`/issue/${issue._id}`}

@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(express.static(buildPath));
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.CLIENT_URL,
     credentials: true
   })
 );

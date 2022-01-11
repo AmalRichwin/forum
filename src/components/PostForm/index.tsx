@@ -1,27 +1,41 @@
 /* eslint-disable react/prop-types */
 import * as React from 'react'
 
+import { ValidationFieldParams } from 'containers/Signup'
 import toast, { Toaster } from 'react-hot-toast'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, UseMutationResult, useQueryClient } from 'react-query'
 
 import { AuthContext } from '../../context/auth'
 import axiosInstance from '../../lib/axiosInstance'
 import { validationErrorMessage } from '../../lib/formValidation'
 
-const addIssueMutation = async (title, description, authorId) => {
+interface IaddIssue {
+    title: string
+    description: string
+    authorId: string
+}
+
+const addIssueMutation = async (
+    title: string,
+    description: string,
+    authorId: string
+): Promise<void> => {
     try {
-        const { data } = await axiosInstance.post('/api/issue/create', {
+        await axiosInstance.post('/api/issue/create', {
             title,
             description,
             authorId,
         })
-        return data
     } catch (error) {
         throw new Error(`Add issue failed: ${error}`)
     }
 }
 
-export default function PostForm({ closeModal }) {
+interface AddIssueFormProps {
+    closeModal: () => void
+}
+
+export default function AddIssueForm({ closeModal }: AddIssueFormProps) {
     const [values, setValues] = React.useState({
         title: '',
         description: '',
@@ -36,7 +50,7 @@ export default function PostForm({ closeModal }) {
 
     const queryClient = useQueryClient()
 
-    const mutation = useMutation(
+    const mutation: UseMutationResult<void, Error, IaddIssue> = useMutation(
         ({ title, description, authorId }) =>
             addIssueMutation(title, description, authorId),
         {
@@ -48,7 +62,10 @@ export default function PostForm({ closeModal }) {
         }
     )
 
-    const validateField = ({ fieldName, fieldValue }) => {
+    const validateField = ({
+        fieldName,
+        fieldValue,
+    }: ValidationFieldParams) => {
         const errMsg = validationErrorMessage({
             fieldName,
             fieldValue,
@@ -62,7 +79,9 @@ export default function PostForm({ closeModal }) {
         }))
     }
 
-    const handleChange = (event) => {
+    const handleChange: React.ChangeEventHandler<
+        HTMLInputElement | HTMLTextAreaElement
+    > = (event) => {
         const { name, value } = event.target
         setValues((prevValues) => ({
             ...prevValues,
@@ -74,7 +93,7 @@ export default function PostForm({ closeModal }) {
         }
     }
 
-    const validateForm = (errors) => {
+    const validateForm = (errors: typeof values.errors) => {
         let isValid = true
 
         Object.entries(errors).forEach((item) => {
@@ -83,7 +102,7 @@ export default function PostForm({ closeModal }) {
             } else {
                 const errMsg = validationErrorMessage({
                     fieldName: item[0],
-                    fieldValue: values[item[0]],
+                    fieldValue: values[item[0] as keyof typeof values.errors],
                 })
 
                 if (errMsg.length) {
@@ -110,7 +129,7 @@ export default function PostForm({ closeModal }) {
         })
     }
 
-    const onSubmit = (evt) => {
+    const onSubmit: React.FormEventHandler = (evt) => {
         evt.preventDefault()
         if (!values.formSubmitted) {
             setValues((prevValues) => ({

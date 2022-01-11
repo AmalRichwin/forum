@@ -1,7 +1,8 @@
 import React from 'react'
 
-// eslint-disable-next-line react/prop-types
-function ChatIcon({ className, ...props }) {
+import { IconProps } from '../lib/types'
+
+function ChatIcon({ className, ...props }: IconProps) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

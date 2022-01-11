@@ -1,12 +1,22 @@
 /* eslint-disable react/prop-types */
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 
 import axiosInstance from '../lib/axiosInstance'
 
-export const AuthContext = React.createContext()
+export const AuthContext = React.createContext<any | unknown>(null)
 
-function AuthContextProvider(props) {
-    const [user, setUser] = React.useState(null)
+type AuthUser = {
+    username: string
+    email: string
+    id: string
+}
+
+function AuthContextProvider(
+    props: PropsWithChildren<{
+        children: React.ReactNode
+    }>
+) {
+    const [user, setUser] = React.useState<AuthUser | null>(null)
 
     React.useEffect(() => {
         axiosInstance

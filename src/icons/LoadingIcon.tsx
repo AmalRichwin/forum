@@ -1,9 +1,8 @@
-/* eslint-disable react/prop-types */
 import React from 'react'
 
-import PropTypes from 'prop-types'
+import { IconProps } from '../lib/types'
 
-function LoadingIcon({ className }) {
+function LoadingIcon({ className }: IconProps) {
     return (
         <svg
             className={className}
@@ -29,7 +28,3 @@ function LoadingIcon({ className }) {
 }
 
 export default LoadingIcon
-
-LoadingIcon.proptypes = {
-    className: PropTypes.string,
-}

@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { CommentType } from 'lib/types'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 
@@ -10,7 +11,7 @@ import { AuthContext } from '../../context/auth'
 import LoadingIcon from '../../icons/LoadingIcon'
 import axiosInstance from '../../lib/axiosInstance'
 
-const fetchIssuePagebyId = async (id) => {
+const fetchIssuePagebyId = async (id: string | undefined) => {
     try {
         const { data } = await axiosInstance.get(`/api/issue/${id}`)
         return data
@@ -70,14 +71,16 @@ export const IssuePage = () => {
                                         </button>
                                     ) : null}
                                 </div>
-                                {data.issue.comments.map((comment) => (
-                                    <CommentListItem
-                                        key={comment._id}
-                                        comment={comment.comment}
-                                        commentDate={comment.createdAt}
-                                        username={comment.userId.username}
-                                    />
-                                ))}
+                                {data.issue.comments.map(
+                                    (comment: CommentType) => (
+                                        <CommentListItem
+                                            key={comment._id}
+                                            comment={comment.comment}
+                                            commentDate={comment.createdAt}
+                                            username={comment.userId.username}
+                                        />
+                                    )
+                                )}
                             </div>
                         </div>
                     </div>

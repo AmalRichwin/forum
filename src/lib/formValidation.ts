@@ -1,6 +1,11 @@
 import { EMAIL_REGEX, PASSWORD_REGEX } from '../constants'
 
-export const validationErrorMessage = (params) => {
+type ParamsType = {
+    fieldName: string
+    fieldValue: string
+}
+
+export const validationErrorMessage = (params: ParamsType) => {
     const { fieldName, fieldValue } = params
     let errMsg = ''
 

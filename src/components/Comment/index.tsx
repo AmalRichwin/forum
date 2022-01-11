@@ -1,9 +1,18 @@
 import React from 'react'
 
 import moment from 'moment'
-import PropTypes from 'prop-types'
 
-function CommentListItem({ username, comment, commentDate }) {
+type CommentListItemProps = {
+    username: string
+    comment: string
+    commentDate: string
+}
+
+function CommentListItem({
+    username,
+    comment,
+    commentDate,
+}: CommentListItemProps) {
     return (
         <div className="flex flex-col mt-10">
             <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -46,9 +55,3 @@ function CommentListItem({ username, comment, commentDate }) {
 }
 
 export default CommentListItem
-
-CommentListItem.propTypes = {
-    username: PropTypes.string.isRequired,
-    comment: PropTypes.string.isRequired,
-    commentDate: PropTypes.string.isRequired,
-}

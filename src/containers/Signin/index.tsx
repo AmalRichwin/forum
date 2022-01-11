@@ -1,29 +1,34 @@
 import React from 'react'
 
+import { ValidationFieldParams } from 'containers/Signup'
 import toast, { Toaster } from 'react-hot-toast'
 import { Link, useNavigate } from 'react-router-dom'
 
 import Navbar2 from '../../components/Navbar/Navbar2'
+import { AuthContext } from '../../context/auth'
 import axiosInstance from '../../lib/axiosInstance'
 import { validationErrorMessage } from '../../lib/formValidation'
 
-function Signup() {
+function Signin() {
     const [values, setValues] = React.useState({
         username: '',
-        email: '',
         password: '',
         passwordToggle: false,
         errors: {
             username: '',
-            email: '',
             password: '',
         },
         formSubmitted: false,
     })
 
+    const authCtx = React.useContext(AuthContext)
+
     const navigate = useNavigate()
 
-    const validateField = ({ fieldName, fieldValue }) => {
+    const validateField = ({
+        fieldName,
+        fieldValue,
+    }: ValidationFieldParams) => {
         const errMsg = validationErrorMessage({
             fieldName,
             fieldValue,
@@ -37,7 +42,9 @@ function Signup() {
         }))
     }
 
-    const handleChange = (event) => {
+    const handleChange: React.ChangeEventHandler<HTMLInputElement> = (
+        event
+    ) => {
         const { name, value } = event.target
         setValues((prevValues) => ({
             ...prevValues,
@@ -49,7 +56,7 @@ function Signup() {
         }
     }
 
-    const validateForm = (errors) => {
+    const validateForm = (errors: { username: string; password: string }) => {
         let isValid = true
 
         Object.entries(errors).forEach((item) => {
@@ -58,7 +65,7 @@ function Signup() {
             } else {
                 const errMsg = validationErrorMessage({
                     fieldName: item[0],
-                    fieldValue: values[item[0]],
+                    fieldValue: values[item[0] as keyof typeof values.errors],
                 })
 
                 if (errMsg.length) {
@@ -77,17 +84,16 @@ function Signup() {
         setValues({
             username: '',
             password: '',
-            email: '',
+            passwordToggle: false,
             errors: {
                 username: '',
-                email: '',
                 password: '',
             },
             formSubmitted: false,
         })
     }
 
-    const onSubmit = async (evt) => {
+    const onSubmit: React.FormEventHandler = async (evt) => {
         evt.preventDefault()
         if (!values.formSubmitted) {
             setValues((prevValues) => ({
@@ -97,33 +103,39 @@ function Signup() {
         }
 
         if (validateForm(values.errors)) {
-            const { username, password, email } = values
+            const { username, password } = values
             try {
-                const { status } = await axiosInstance.post(
-                    '/api/signup',
+                const { status, data } = await axiosInstance.post(
+                    '/api/login',
                     {
                         username,
                         password,
-                        email,
                     },
                     {
                         withCredentials: true,
                     }
                 )
-                if (status === 201) {
+                if (status === 200) {
                     resetForm()
-                    return navigate('/signin')
+                    authCtx.setUser(data.user)
+                    return navigate('/', {
+                        state: {
+                            message: 'You have successfully logged in',
+                        },
+                    })
                 }
-            } catch (error) {
-                if (error.response.data.message === 'User already exists') {
-                    toast.error(error.response.data.message)
+            } catch (error: InstanceType<Error>) {
+                if (error.response.status === 401) {
+                    toast.error('Invalid Password')
+                    return
                 }
-                toast.error('Unable to signup')
-                console.log(error)
+                toast.error(error.response.data.message)
+                console.log('@@#', error.response)
                 throw new Error(`Add issue failed: ${error}`)
             }
         }
     }
+
     return (
         <>
             <Navbar2 />
@@ -133,29 +145,29 @@ function Signup() {
                     <div className="flex flex-col w-full max-w-md p-10 mx-auto my-4 transition duration-500 ease-in-out transform bg-white rounded-lg md:mt-0">
                         <div className="my-6">
                             <div>
-                                <h1 className="text-lg font-bold leading-none tracking-tighter text-center text-blueGray-600 md:text-xl lg:text-2xl font-heading">
-                                    Create an account to join the forum
+                                <h1 className="text-xl font-bold leading-none tracking-tighter text-center font-heading text-blueGray-600 md:text-2xl lg:text-3xl">
+                                    Sign in to your account
                                 </h1>
                                 <p className="mt-4 text-sm font-medium leading-none text-center text-gray-500 font-poppins focus:outline-none">
-                                    Have account ?{' '}
+                                    Dont have account?{' '}
                                     <Link
-                                        to="/signin"
+                                        to="/signup"
                                         className="text-sm font-medium leading-none text-gray-800 cursor-pointer hover:text-gray-500 focus:text-gray-500 focus:outline-none focus:underline hover:underline"
                                     >
                                         {' '}
-                                        Sign in here
+                                        Sign up here
                                     </Link>
                                 </p>
                             </div>
                             <div className="mt-10">
                                 <form
-                                    onSubmit={onSubmit}
                                     noValidate
+                                    onSubmit={onSubmit}
                                     className="space-y-6"
                                 >
                                     <div>
                                         <label
-                                            htmlFor="name"
+                                            htmlFor="email"
                                             className="block text-sm font-medium font-poppins text-neutral-600"
                                         >
                                             {' '}
@@ -166,6 +178,8 @@ function Signup() {
                                                 id="username"
                                                 name="username"
                                                 type="text"
+                                                autoComplete="name"
+                                                required
                                                 value={values.username}
                                                 onChange={handleChange}
                                                 onBlur={(evt) =>
@@ -176,49 +190,15 @@ function Signup() {
                                                             evt.target.value,
                                                     })
                                                 }
-                                                autoComplete="name"
-                                                required
                                                 placeholder="Your Username"
                                                 className="block w-full px-5 py-3 text-base placeholder-gray-300 transition duration-500 ease-in-out transform border border-transparent rounded-lg text-neutral-600 bg-gray-50 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-300"
                                             />
                                             {values.errors.username.length ? (
-                                                <span className="text-sm text-red-600 font-poppins">
+                                                <span
+                                                    className="text-xs font-poppins text-red-600/80"
+                                                    id="password-error"
+                                                >
                                                     {values.errors.username}
-                                                </span>
-                                            ) : null}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label
-                                            htmlFor="email"
-                                            className="block text-sm font-medium font-poppins text-neutral-600"
-                                        >
-                                            {' '}
-                                            Email address*{' '}
-                                        </label>
-                                        <div className="mt-1">
-                                            <input
-                                                id="email"
-                                                name="email"
-                                                type="email"
-                                                value={values.email}
-                                                onChange={handleChange}
-                                                onBlur={(evt) =>
-                                                    validateField({
-                                                        fieldName:
-                                                            evt.target.name,
-                                                        fieldValue:
-                                                            evt.target.value,
-                                                    })
-                                                }
-                                                autoComplete="email"
-                                                required
-                                                placeholder="Your Email"
-                                                className="block w-full px-5 py-3 text-base placeholder-gray-300 transition duration-500 ease-in-out transform border border-transparent rounded-lg text-neutral-600 bg-gray-50 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-300"
-                                            />
-                                            {values.errors.email.length ? (
-                                                <span className="text-sm text-red-600 font-poppins">
-                                                    {values.errors.email}
                                                 </span>
                                             ) : null}
                                         </div>
@@ -232,37 +212,34 @@ function Signup() {
                                             Password*{' '}
                                         </label>
                                         <div className="mt-1">
-                                            <input
-                                                id="password"
-                                                name="password"
-                                                type="password"
-                                                value={values.password}
-                                                onChange={handleChange}
-                                                onBlur={(evt) =>
-                                                    validateField({
-                                                        fieldName:
-                                                            evt.target.name,
-                                                        fieldValue:
-                                                            evt.target.value,
-                                                    })
-                                                }
-                                                autoComplete="current-password"
-                                                required
-                                                placeholder="Your Password"
-                                                className="block w-full px-5 py-3 text-base placeholder-gray-300 transition duration-500 ease-in-out transform border border-transparent rounded-lg text-neutral-600 bg-gray-50 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-300"
-                                            />
+                                            <div className="relative text-gray-700">
+                                                <input
+                                                    id="password"
+                                                    name="password"
+                                                    type="password"
+                                                    autoComplete="current-password"
+                                                    value={values.password}
+                                                    onChange={handleChange}
+                                                    onBlur={(evt) =>
+                                                        validateField({
+                                                            fieldName:
+                                                                evt.target.name,
+                                                            fieldValue:
+                                                                evt.target
+                                                                    .value,
+                                                        })
+                                                    }
+                                                    required
+                                                    placeholder="Your Password"
+                                                    className="block w-full px-5 py-3 text-base placeholder-gray-300 transition duration-500 ease-in-out transform border border-transparent rounded-lg text-neutral-600 bg-gray-50 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-300"
+                                                />
+                                            </div>
                                             {values.errors.password.length ? (
-                                                <span className="text-sm text-red-600 font-poppins">
+                                                <span
+                                                    className="text-xs font-poppins text-red-600/80"
+                                                    id="password-error"
+                                                >
                                                     {values.errors.password}
-                                                </span>
-                                            ) : null}
-                                            {!values.errors.password.length ? (
-                                                <span className="text-xs text-gray-300 font-poppins">
-                                                    Must be at least 8
-                                                    characters, with at least
-                                                    two number, one uppercase
-                                                    letter and one lowercase and
-                                                    one special character
                                                 </span>
                                             ) : null}
                                         </div>
@@ -273,7 +250,7 @@ function Signup() {
                                             className="flex items-center justify-center w-full px-10 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform shadow-lg bg-sky-500 shadow-sky-500/50 rounded-xl hover:bg-sky-600 focus:outline-none font-poppins"
                                         >
                                             {' '}
-                                            Sign up{' '}
+                                            Sign in{' '}
                                         </button>
                                     </div>
                                 </form>
@@ -286,4 +263,4 @@ function Signup() {
     )
 }
 
-export default Signup
+export default Signin

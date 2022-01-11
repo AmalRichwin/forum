@@ -12,10 +12,12 @@ module.exports = {
         // 'plugin:jsx-a11y/recommended',
         'plugin:react-hooks/recommended',
         'plugin:prettier/recommended',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
     ],
     parserOptions: {
         ecmaFeatures: {
-            jsx: true,
+            tsx: true,
         },
         ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
         sourceType: 'module', // Allows for the use of imports
@@ -43,6 +45,10 @@ module.exports = {
                     caseInsensitive: true,
                 },
             },
+        ],
+        'react/jsx-filename-extension': [
+            1,
+            { extensions: ['.js', '.jsx', '.tsx'] },
         ],
         'no-duplicate-imports': 'warn',
         'no-unused-vars': 'warn',
