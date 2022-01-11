@@ -30,6 +30,7 @@
         "eslint-plugin-react": "^7.28.0",
         "eslint-plugin-react-hooks": "^4.3.0",
         "eslint-plugin-testing-library": "^5.0.1",
+        "nodemon": "^2.0.15",
         "postcss": "^8.4.5",
         "prettier": "^2.5.1",
         "tailwindcss": "^3.0.12"
@@ -39,6 +40,7 @@
         "build": "react-scripts build && (cd server && yarn install)",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
+        "start:devserver": "nodemon server/index.js",
         "start": "cd server && yarn start",
         "lint": "eslint -c .eslintrc.js --ext .js,.jsx .",
         "lint:fix": "npm run lint -- --fix"

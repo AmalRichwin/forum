@@ -25,10 +25,11 @@ app.use(express.json());
 app.use(express.static(buildPath));
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL,
     credentials: true
   })
 );
+
 app.use(eplMiddleware);
 app.use(
   session({
