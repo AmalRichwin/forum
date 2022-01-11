@@ -5,13 +5,21 @@ import PropTypes from 'prop-types'
 
 import ChatIcon from '../../icons/ChatIcon'
 
+type IssueListItemProps = {
+    title: string
+    description: string
+    createdAt: string
+    commentsCount: number
+    authorName: string
+}
+
 function ListItem({
     title,
     description,
     createdAt,
     commentsCount,
     authorName,
-}) {
+}: IssueListItemProps) {
     return (
         <article className="flex items-start p-6 mt-1 space-x-6 hover:bg-gray-50">
             <img

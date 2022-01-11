@@ -1,7 +1,8 @@
-/* eslint-disable react/prop-types */
 import React from 'react'
 
-function Xicon({ className, ...props }) {
+import { IconProps } from '../lib/types'
+
+function Xicon({ className, ...props }: IconProps) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

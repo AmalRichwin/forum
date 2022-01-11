@@ -1,28 +1,43 @@
 import * as React from 'react'
 
 import { Dialog, Transition } from '@headlessui/react'
+import { ValidationFieldParams } from 'containers/Signup'
 import PropTypes from 'prop-types'
-import { useMutation, useQueryClient } from 'react-query'
+import { useMutation, UseMutationResult, useQueryClient } from 'react-query'
 
 import { AuthContext } from '../../../context/auth'
 import axiosInstance from '../../../lib/axiosInstance'
 import { validationErrorMessage } from '../../../lib/formValidation'
 
-const addCommentMutation = async (issueId, comment, userId) => {
+interface IAddComment {
+    issueId: string | undefined
+    comment: string
+    userId: string | null
+}
+
+const addCommentMutation = async ({
+    issueId,
+    comment,
+    userId,
+}: IAddComment): Promise<void> => {
     try {
-        console.log(userId)
-        const { data } = await axiosInstance.post('/api/issue/addcomment', {
+        await axiosInstance.post('/api/issue/addcomment', {
             issueId,
             comment,
             userId,
         })
-        return data
     } catch (error) {
         throw new Error(`Add issue failed: ${error}`)
     }
 }
 
-function AddCommentModal({ issueId, isOpen, onClose }) {
+type AddCommentModalProps = {
+    isOpen: boolean
+    onClose: () => void
+    issueId: string | undefined
+}
+
+function AddCommentModal({ issueId, isOpen, onClose }: AddCommentModalProps) {
     const cancelButtonRef = React.useRef(null)
     const [values, setValues] = React.useState({
         comment: '',
@@ -36,9 +51,9 @@ function AddCommentModal({ issueId, isOpen, onClose }) {
 
     const queryClient = useQueryClient()
 
-    const mutation = useMutation(
+    const mutation: UseMutationResult<void, Error, IAddComment> = useMutation(
         ({ issueId, comment, userId }) =>
-            addCommentMutation(issueId, comment, userId),
+            addCommentMutation({ issueId, comment, userId }),
         {
             onSuccess: () => {
                 resetForm()
@@ -49,7 +64,10 @@ function AddCommentModal({ issueId, isOpen, onClose }) {
         }
     )
 
-    const validateField = ({ fieldName, fieldValue }) => {
+    const validateField = ({
+        fieldName,
+        fieldValue,
+    }: ValidationFieldParams) => {
         const errMsg = validationErrorMessage({
             fieldName,
             fieldValue,
@@ -63,7 +81,9 @@ function AddCommentModal({ issueId, isOpen, onClose }) {
         }))
     }
 
-    const handleChange = (event) => {
+    const handleChange: React.ChangeEventHandler<
+        HTMLInputElement | HTMLTextAreaElement
+    > = (event) => {
         const { name, value } = event.target
         setValues((prevValues) => ({
             ...prevValues,
@@ -75,7 +95,7 @@ function AddCommentModal({ issueId, isOpen, onClose }) {
         }
     }
 
-    const validateForm = (errors) => {
+    const validateForm = (errors: typeof values.errors) => {
         let isValid = true
 
         Object.entries(errors).forEach((item) => {
@@ -84,7 +104,7 @@ function AddCommentModal({ issueId, isOpen, onClose }) {
             } else {
                 const errMsg = validationErrorMessage({
                     fieldName: item[0],
-                    fieldValue: values[item[0]],
+                    fieldValue: values[item[0] as keyof typeof values.errors],
                 })
 
                 if (errMsg.length) {
@@ -101,17 +121,15 @@ function AddCommentModal({ issueId, isOpen, onClose }) {
 
     const resetForm = () => {
         setValues({
-            title: '',
-            description: '',
+            comment: '',
             errors: {
-                title: '',
-                description: '',
+                comment: '',
             },
             formSubmitted: false,
         })
     }
 
-    const onSubmit = (evt) => {
+    const onSubmit: React.FormEventHandler = (evt) => {
         evt.preventDefault()
         if (!values.formSubmitted) {
             setValues((prevValues) => ({
@@ -122,8 +140,7 @@ function AddCommentModal({ issueId, isOpen, onClose }) {
 
         if (validateForm(values.errors)) {
             const { comment } = values
-            const userId = authCtx.user.id
-            console.log('USER', authCtx)
+            const userId: string | null = authCtx.user.id
             try {
                 mutation.mutate({ comment, issueId, userId })
             } catch (error) {

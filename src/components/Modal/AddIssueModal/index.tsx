@@ -3,9 +3,17 @@ import React, { Fragment, useRef } from 'react'
 
 import { Dialog, Transition } from '@headlessui/react'
 
-import PostForm from '../../PostForm'
+import AddIssueForm from '../../PostForm'
 
-export default function AddIssueModal({ isOpen, closeModal }) {
+interface AddIssueModalProps {
+    isOpen: boolean
+    closeModal: () => void
+}
+
+export default function AddIssueModal({
+    isOpen,
+    closeModal,
+}: AddIssueModalProps) {
     const cancelButtonRef = useRef(null)
 
     return (
@@ -48,7 +56,7 @@ export default function AddIssueModal({ isOpen, closeModal }) {
                         <div className="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                             <div className="px-4 pt-5 pb-4 bg-white sm:p-6 sm:pb-4">
                                 <div className="">
-                                    <PostForm closeModal={closeModal} />
+                                    <AddIssueForm closeModal={closeModal} />
                                 </div>
                             </div>
                         </div>
