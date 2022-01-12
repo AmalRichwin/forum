@@ -3,6 +3,8 @@ const express = require('express');
 const passport = require('passport');
 const path = require('path');
 const cors = require('cors');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
 const session = require('express-session');
 const pinologger = require('express-pino-logger');
 
@@ -29,11 +31,16 @@ app.use(
     credentials: true
   })
 );
-
+app.use(helmet());
+app.use(
+  mongoSanitize({
+    replaceWith: '_'
+  })
+);
 app.use(eplMiddleware);
 app.use(
   session({
-    secret: 'secretcodeforum',
+    secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true
   })
