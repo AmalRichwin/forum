@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { logger } = require('../config/logger');
 
 const { IssueModel } = require('../models/issue');
 
@@ -176,6 +177,51 @@ exports.getIssueById = async function (req, res) {
       message: 'No issue found'
     });
   } catch (error) {
+    return res.status(500).json({
+      status: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+exports.searchIssues = async function (req, res) {
+  const { query } = req.query;
+
+  try {
+    const issues = await IssueModel.find(
+      {
+        $text: {
+          $search: query,
+          $caseSensitive: false,
+          $diacriticSensitive: false,
+          $language: 'en'
+        }
+      },
+      {
+        title: 1,
+        description: 1
+      }
+    )
+      .sort({
+        score: {
+          $meta: 'textScore'
+        }
+      })
+      .exec();
+
+    if (issues.length) {
+      return res.send({
+        status: true,
+        issues
+      });
+    }
+
+    return res.status(400).send({
+      status: false,
+      message: 'No issues found'
+    });
+  } catch (error) {
+    logger.error(`Error in searchIssues: ${error}`);
     return res.status(500).json({
       status: false,
       message: 'Internal server error'

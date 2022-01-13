@@ -1,6 +1,8 @@
 import * as React from 'react'
 
 import SearchModal from 'components/Modal/SearchModal'
+import { motion } from 'framer-motion'
+import { SearchSolidIcon } from 'icons'
 import { IssueType } from 'lib/types'
 import { useInfiniteQuery } from 'react-query'
 import { Link } from 'react-router-dom'
@@ -24,7 +26,7 @@ const fetchIssues = async ({ pageParam = 1 }) => {
 
 function IssueList() {
     const [open, setOpen] = React.useState(false)
-    const [isSearchModalOpen, setSearchModalClose] = React.useState(true)
+    const [isSearchModalOpen, setSearchModalClose] = React.useState(false)
 
     const authCtx = React.useContext(AuthContext)
 
@@ -67,7 +69,7 @@ function IssueList() {
                                 <div className="w-full border-t border-black"></div>
                             </div>
                             <div className="relative flex justify-start">
-                                <span className="pr-3 text-lg font-medium bg-white text-neutral-600">
+                                <span className="pr-3 text-lg font-medium bg-white font-poppins text-neutral-600">
                                     All Issues
                                 </span>
                             </div>
@@ -83,6 +85,21 @@ function IssueList() {
                                 </button>
                             ) : null}
                         </div>
+                        <motion.div
+                            className={` ${
+                                isSearchModalOpen ? 'hidden' : ''
+                            } sticky z-50 flex justify-center my-5 top-5 `}
+                        >
+                            <button
+                                onClick={() => setSearchModalClose(true)}
+                                className="px-3 py-2 text-sm font-medium bg-white border-2 border-gray-200 rounded-md shadow-lg text-gray-500/80 hover:border-gray-300/30 hover:text-gray-400/60 font-poppins"
+                            >
+                                Search for Issues
+                                <span className="inline-block ml-2 align-middle">
+                                    <SearchSolidIcon />
+                                </span>
+                            </button>
+                        </motion.div>
                         <AddPostModal
                             isOpen={open}
                             closeModal={() => setOpen(false)}

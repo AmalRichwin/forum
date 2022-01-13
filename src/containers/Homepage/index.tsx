@@ -1,6 +1,8 @@
 import * as React from 'react'
 
 import Footer from 'components/Footer'
+import Loading from 'components/Loading'
+import LoadingIcon from 'icons/LoadingIcon'
 
 import Header from '../../components/Header'
 import IssueList from '../../components/IssueList'
@@ -11,7 +13,9 @@ export default function Homepage() {
         <>
             <Navbar />
             <Header />
-            <IssueList />
+            <React.Suspense fallback={<Loading />}>
+                <IssueList />
+            </React.Suspense>
             <Footer />
         </>
     )

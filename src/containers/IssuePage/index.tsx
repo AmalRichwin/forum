@@ -8,7 +8,6 @@ import CommentListItem from '../../components/Comment'
 import AddCommentModal from '../../components/Modal/AddCommentModal'
 import Navbar from '../../components/Navbar'
 import { AuthContext } from '../../context/auth'
-import LoadingIcon from '../../icons/LoadingIcon'
 import axiosInstance from '../../lib/axiosInstance'
 
 const fetchIssuePagebyId = async (id: string | undefined) => {
@@ -20,29 +19,20 @@ const fetchIssuePagebyId = async (id: string | undefined) => {
     }
 }
 
-export const IssuePage = () => {
+const IssuePage = () => {
     const [openCommentModal, setOpenCommentModal] = React.useState(false)
 
     const authCtx = React.useContext(AuthContext)
 
     const { id } = useParams()
 
-    const { data, isLoading } = useQuery(
-        ['issue', id],
-        () => fetchIssuePagebyId(id),
-        {
-            enabled: !!id,
-            retry: false,
-        }
-    )
+    const { data } = useQuery(['issue', id], () => fetchIssuePagebyId(id), {
+        enabled: !!id,
+        retry: false,
+    })
     return (
         <>
             <Navbar />
-            {isLoading && (
-                <div className="grid h-[calc(100vh_-_10rem)] place-items-center">
-                    <LoadingIcon className="w-12 h-12 text-sky-500 animate-spin" />
-                </div>
-            )}
             {data && data.issue && (
                 <section>
                     <div className="container flex flex-col items-center px-5 py-8 mx-auto border-2 max-w-7xl sm:px-6 lg:px-8 border-slate-400/20">
@@ -94,3 +84,5 @@ export const IssuePage = () => {
         </>
     )
 }
+
+export default IssuePage
