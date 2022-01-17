@@ -1,10 +1,11 @@
 import React from 'react'
 
+import { CommentBox } from 'components/Comment'
 import { CommentType } from 'lib/types'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 
-import CommentListItem from '../../components/Comment'
+import { CommentListItem } from '../../components/Comment'
 import AddCommentModal from '../../components/Modal/AddCommentModal'
 import Navbar from '../../components/Navbar'
 import { AuthContext } from '../../context/auth'
@@ -29,6 +30,9 @@ const IssuePage = () => {
     const { data } = useQuery(['issue', id], () => fetchIssuePagebyId(id), {
         enabled: !!id,
         retry: false,
+        onError: () => {
+            window.location.href = '/404'
+        },
     })
     return (
         <>
@@ -38,9 +42,12 @@ const IssuePage = () => {
                     <div className="container flex flex-col items-center px-5 py-8 mx-auto border-2 max-w-7xl sm:px-6 lg:px-8 border-slate-400/20">
                         <div className="flex flex-col w-full max-w-3xl mx-auto prose text-left prose-blue">
                             <div className="w-full mx-auto">
-                                <h2 className="mb-10 text-xl font-bold md:text-2xl font-heading">
-                                    {data.issue.title}?
-                                </h2>
+                                <h1 className="mb-10 text-xl font-bold  md:text-2xl font-heading">
+                                    {data.issue.title}?{' '}
+                                    <span className="text-sm text-right text-gray-400 ">
+                                        posted by {data.issue.authorId.username}
+                                    </span>
+                                </h1>
                                 <pre className="whitespace-pre-line font-poppins">
                                     {data.issue.description}
                                 </pre>
@@ -71,6 +78,7 @@ const IssuePage = () => {
                                         />
                                     )
                                 )}
+                                <CommentBox />
                             </div>
                         </div>
                     </div>

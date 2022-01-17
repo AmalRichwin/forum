@@ -1,8 +1,6 @@
 import * as React from 'react'
 
-import SearchModal from 'components/Modal/SearchModal'
 import { motion } from 'framer-motion'
-import { SearchSolidIcon } from 'icons'
 import { IssueType } from 'lib/types'
 import { useInfiniteQuery } from 'react-query'
 import { Link } from 'react-router-dom'
@@ -26,7 +24,6 @@ const fetchIssues = async ({ pageParam = 1 }) => {
 
 function IssueList() {
     const [open, setOpen] = React.useState(false)
-    const [isSearchModalOpen, setSearchModalOpen] = React.useState(false)
 
     const authCtx = React.useContext(AuthContext)
 
@@ -44,51 +41,30 @@ function IssueList() {
             lastPage.hasMore ? lastPage.currentPage + 1 : false,
     })
 
-    function closeModal() {
-        setSearchModalOpen(false)
-    }
-
-    function openModal() {
-        setSearchModalOpen(true)
-    }
-
-    React.useEffect(() => {
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'k' && e.ctrlKey) {
-                openModal()
-            }
-        })
-        return () => {
-            window.removeEventListener('keydown', () => {
-                closeModal()
-            })
-        }
-    }, [])
-
     return (
         <>
-            <SearchModal
-                isModalOpen={isSearchModalOpen}
-                closeModal={closeModal}
-            />
             <section>
                 <div className="px-4 pt-2 pb-12 mx-auto ">
-                    <div className="max-w-4xl pt-24 mx-auto">
-                        <div className="relative">
-                            <div
-                                className="absolute inset-0 flex items-center"
-                                aria-hidden="true"
-                            >
-                                <div className="w-full border-t border-black"></div>
-                            </div>
-                            <div className="relative flex justify-start">
-                                <span className="pr-3 text-lg font-medium bg-white font-poppins text-neutral-600">
-                                    All Issues
-                                </span>
-                            </div>
-                        </div>
-                        <div className="space-y-8 lg:divide-y lg:divide-gray-100"></div>
-                        <div className="relative flex justify-end my-5">
+                    <div className="max-w-4xl mx-auto">
+                        {!authCtx.user ? (
+                            <>
+                                <div className="relative">
+                                    <div
+                                        className="absolute inset-0 flex items-center"
+                                        aria-hidden="true"
+                                    >
+                                        <div className="w-full border-t border-black"></div>
+                                    </div>
+                                    <div className="relative flex justify-start">
+                                        <span className="pr-3 text-lg font-medium bg-white font-poppins text-neutral-600">
+                                            All Issues
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="space-y-8 lg:divide-y lg:divide-gray-100"></div>{' '}
+                            </>
+                        ) : null}
+                        <motion.div className="flex justify-end my-5">
                             {authCtx.user ? (
                                 <button
                                     onClick={() => setOpen(true)}
@@ -97,29 +73,6 @@ function IssueList() {
                                     Add Post
                                 </button>
                             ) : null}
-                        </div>
-                        <motion.div
-                            className={` ${
-                                isSearchModalOpen ? 'hidden' : ''
-                            } sticky z-50 flex justify-center my-5 top-5 `}
-                        >
-                            <button
-                                onClick={openModal}
-                                className="px-3 py-2 text-sm font-medium bg-white border-2 border-gray-200 rounded-md shadow-lg text-gray-500/80 hover:border-gray-300/30 hover:text-gray-400/60 font-poppins"
-                            >
-                                Search for Issues
-                                <span className="invisible ml-5 ml-autofill: lg:visible">
-                                    <kbd className="inline-flex items-center justify-center p-1 mr-1 text-xs font-normal text-center align-middle transition duration-150 ease-in-out bg-gray-100 border border-gray-300 rounded font-poppins group-hover:border-gray-300 ">
-                                        ⌘
-                                    </kbd>
-                                    <kbd className="inline-flex items-center justify-center p-1 ml-auto mr-0 text-xs text-center align-middle transition duration-150 ease-in-out bg-gray-100 border border-gray-300 rounded font-poppins group-hover:border-gray-300 ">
-                                        K
-                                    </kbd>
-                                </span>
-                                <span className="inline-block ml-2 align-middle">
-                                    <SearchSolidIcon />
-                                </span>
-                            </button>
                         </motion.div>
                         <AddPostModal
                             isOpen={open}
@@ -161,7 +114,11 @@ function IssueList() {
                                 <button
                                     onClick={() => fetchNextPage()}
                                     disabled={isLoading || !hasNextPage}
-                                    className="px-3 py-2 text-sm font-medium text-white rounded-md shadow-lg hover:bg-sky-700 shadow-sky-500/50 hover:text-gray-100 font-poppins bg-sky-500"
+                                    className={` ${
+                                        hasNextPage
+                                            ? 'bg-sky-500 shadow-sky-500/50 hover:bg-sky-700'
+                                            : 'bg-gray-300 shadow-gray-300/50 hover:bg-gray-400'
+                                    } px-3 py-2 text-sm font-medium text-white rounded-md shadow-lg hover:text-gray-100 font-poppins`}
                                 >
                                     {hasNextPage
                                         ? 'Load More'

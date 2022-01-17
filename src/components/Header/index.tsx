@@ -2,10 +2,7 @@ import React from 'react'
 
 import { Link } from 'react-router-dom'
 
-import { AuthContext } from '../../context/auth'
-
 function Header() {
-    const authCtx = React.useContext(AuthContext)
     return (
         <section className="w-full bg-white">
             <div className="relative items-center w-full px-5 py-10 mx-auto md:px-12 lg:px-16 max-w-7xl lg:pt-24 lg:pb-12">
@@ -20,16 +17,14 @@ function Header() {
                                 Forum is a place to share knowledge and discuss
                                 new web technologies.
                             </p>
-                            {!authCtx.user ? (
-                                <div className="flex justify-center w-full max-w-2xl gap-2 mx-auto mt-6">
-                                    <Link
-                                        to="/signup"
-                                        className="items-center block px-5 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform rounded-lg shadow-lg font-poppins bg-sky-500 shadow-sky-500/50 lg:px-10 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
-                                    >
-                                        Signup to join the forum
-                                    </Link>
-                                </div>
-                            ) : null}
+                            <div className="flex justify-center w-full max-w-2xl gap-2 mx-auto mt-6">
+                                <Link
+                                    to="/signup"
+                                    className="items-center block px-5 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform rounded-lg shadow-lg font-poppins bg-sky-500 shadow-sky-500/50 lg:px-10 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                                >
+                                    Signup to join the forum
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
