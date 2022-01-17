@@ -10,7 +10,7 @@ interface AddIssueModalProps {
     closeModal: () => void
 }
 
-export default function AddIssueModal({
+export default function AaddIssueModal({
     isOpen,
     closeModal,
 }: AddIssueModalProps) {
@@ -20,7 +20,7 @@ export default function AddIssueModal({
         <Transition.Root show={isOpen} as={Fragment}>
             <Dialog
                 as="div"
-                className="fixed inset-0 z-10 overflow-y-auto"
+                className="fixed inset-0 z-50 overflow-y-auto"
                 initialFocus={cancelButtonRef}
                 onClose={closeModal}
             >

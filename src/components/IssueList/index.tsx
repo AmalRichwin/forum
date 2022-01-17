@@ -26,7 +26,7 @@ const fetchIssues = async ({ pageParam = 1 }) => {
 
 function IssueList() {
     const [open, setOpen] = React.useState(false)
-    const [isSearchModalOpen, setSearchModalClose] = React.useState(false)
+    const [isSearchModalOpen, setSearchModalOpen] = React.useState(false)
 
     const authCtx = React.useContext(AuthContext)
 
@@ -45,12 +45,25 @@ function IssueList() {
     })
 
     function closeModal() {
-        setSearchModalClose(false)
+        setSearchModalOpen(false)
     }
 
     function openModal() {
-        setSearchModalClose(true)
+        setSearchModalOpen(true)
     }
+
+    React.useEffect(() => {
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'k' && e.ctrlKey) {
+                openModal()
+            }
+        })
+        return () => {
+            window.removeEventListener('keydown', () => {
+                closeModal()
+            })
+        }
+    }, [])
 
     return (
         <>
@@ -91,10 +104,18 @@ function IssueList() {
                             } sticky z-50 flex justify-center my-5 top-5 `}
                         >
                             <button
-                                onClick={() => setSearchModalClose(true)}
+                                onClick={openModal}
                                 className="px-3 py-2 text-sm font-medium bg-white border-2 border-gray-200 rounded-md shadow-lg text-gray-500/80 hover:border-gray-300/30 hover:text-gray-400/60 font-poppins"
                             >
                                 Search for Issues
+                                <span className="invisible ml-5 ml-autofill: lg:visible">
+                                    <kbd className="inline-flex items-center justify-center p-1 mr-1 text-xs font-normal text-center align-middle transition duration-150 ease-in-out bg-gray-100 border border-gray-300 rounded font-poppins group-hover:border-gray-300 ">
+                                        ⌘
+                                    </kbd>
+                                    <kbd className="inline-flex items-center justify-center p-1 ml-auto mr-0 text-xs text-center align-middle transition duration-150 ease-in-out bg-gray-100 border border-gray-300 rounded font-poppins group-hover:border-gray-300 ">
+                                        K
+                                    </kbd>
+                                </span>
                                 <span className="inline-block ml-2 align-middle">
                                     <SearchSolidIcon />
                                 </span>

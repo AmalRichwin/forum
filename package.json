@@ -20,7 +20,8 @@
         "react-hot-toast": "^2.2.0",
         "react-query": "^3.34.7",
         "react-router-dom": "^6.2.1",
-        "react-scripts": "^5.0.0"
+        "react-scripts": "^5.0.0",
+        "recoil": "^0.5.2"
     },
     "devDependencies": {
         "@types/jest": "^27.4.0",
